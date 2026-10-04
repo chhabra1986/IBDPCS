@@ -1,0 +1,254 @@
+<!doctype html>
+<html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<title>IB CS Paper Generator</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Archivo:wght@400;500;600;700;800&family=Source+Serif+4:ital,opsz,wght@0,8..60,400;0,8..60,600;1,8..60,400&family=JetBrains+Mono:wght@400;600&display=swap">
+<style>
+body{margin:0}
+
+/* Layout: drafting-table workspace — control rail on the left, an A4 exam sheet on the right. */
+:root{
+  --bg:#eef1f6; --panel:#ffffff; --sheet:#ffffff; --ink:#151c2b; --muted:#5a6478; --line:#d5dbe6;
+  --accent:#0f766e; --accent-ink:#ffffff; --accent-soft:#dcf1ee;
+  --ms:#ecf6ef; --ms-line:#9cc9a8; --ms-ink:#1d5a33;
+  --good:#1f8a4c; --bad:#c2372f; --warn:#a86b00;
+  --f-ui:"Archivo",system-ui,-apple-system,"Segoe UI",sans-serif;
+  --f-paper:"Source Serif 4",Georgia,"Times New Roman",serif;
+  --f-mono:"JetBrains Mono",ui-monospace,Consolas,monospace;
+}
+@media (prefers-color-scheme: dark){:root:not([data-theme="light"]){
+  --bg:#0f141d; --panel:#171e2b; --sheet:#1b2230; --ink:#e7ebf3; --muted:#9aa5ba; --line:#2c3547;
+  --accent:#4fd1c0; --accent-ink:#06201d; --accent-soft:#123a36;
+  --ms:#15291e; --ms-line:#2f6b45; --ms-ink:#9fe0b4;
+  --good:#4cc47f; --bad:#ff7a70; --warn:#f0b54a; color-scheme:dark}}
+:root[data-theme="dark"]{
+  --bg:#0f141d; --panel:#171e2b; --sheet:#1b2230; --ink:#e7ebf3; --muted:#9aa5ba; --line:#2c3547;
+  --accent:#4fd1c0; --accent-ink:#06201d; --accent-soft:#123a36;
+  --ms:#15291e; --ms-line:#2f6b45; --ms-ink:#9fe0b4;
+  --good:#4cc47f; --bad:#ff7a70; --warn:#f0b54a; color-scheme:dark}
+*{box-sizing:border-box}
+[hidden]{display:none!important}
+body{background:var(--bg);color:var(--ink);font-family:var(--f-ui);font-size:15px;line-height:1.5}
+.wrap{max-width:1280px;margin:0 auto;padding-inline:16px;padding-block:20px 48px}
+header.top{display:flex;flex-wrap:wrap;align-items:flex-end;justify-content:space-between;gap:12px 24px;margin-bottom:18px}
+.brand h1{font-size:clamp(22px,3vw,30px);font-weight:800;letter-spacing:-.01em;margin:0;text-wrap:balance}
+.brand p{margin:4px 0 0;color:var(--muted);max-width:62ch}
+.eyebrow{font-family:var(--f-mono);font-size:11.5px;letter-spacing:.08em;text-transform:uppercase;color:var(--accent);font-weight:600}
+.tabs{display:flex;gap:4px;background:var(--panel);border:1px solid var(--line);border-radius:10px;padding:4px}
+.tabs button{font:600 14px var(--f-ui);border:0;background:transparent;color:var(--muted);padding:8px 14px;border-radius:7px;cursor:pointer}
+.tabs button[aria-selected="true"]{background:var(--accent);color:var(--accent-ink)}
+.tabs button:focus-visible,.btn:focus-visible,.chip:focus-within,select:focus-visible,input:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
+.grid{display:grid;grid-template-columns:320px minmax(0,1fr);gap:20px;align-items:start}
+@media (max-width:900px){.grid{grid-template-columns:minmax(0,1fr)}}
+aside.rail{background:var(--panel);border:1px solid var(--line);border-radius:12px;padding:18px;display:flex;flex-direction:column;gap:18px;position:sticky;top:calc(env(safe-area-inset-top,0px) + 12px)}
+@media (max-width:900px){aside.rail{position:static}}
+.rail h2{font-size:13px;margin:0 0 8px;text-transform:uppercase;letter-spacing:.06em;color:var(--muted);font-weight:700}
+.field{display:flex;flex-direction:column;gap:6px}
+.field label,.lbl{font-size:13.5px;font-weight:600}
+.row{display:flex;gap:8px;align-items:center;flex-wrap:wrap}
+input[type=number],input[type=text],select{font:500 14px var(--f-ui);color:var(--ink);background:var(--bg);border:1px solid var(--line);border-radius:8px;padding:7px 10px;min-width:0}
+input[type=number]{width:72px}
+.hint{font-size:12.5px;color:var(--muted);margin:0}
+.btn{font:600 14px var(--f-ui);border-radius:8px;padding:9px 14px;cursor:pointer;border:1px solid var(--line);background:var(--panel);color:var(--ink)}
+.btn.primary{background:var(--accent);border-color:var(--accent);color:var(--accent-ink)}
+.btn.small{padding:6px 10px;font-size:13px}
+.btn:disabled{opacity:.5;cursor:not-allowed}
+.stack{display:flex;flex-direction:column;gap:8px}
+.topics{display:grid;grid-template-columns:1fr;gap:4px;max-height:330px;overflow:auto;padding-right:4px}
+.chip{display:flex;gap:8px;align-items:flex-start;font-size:13.5px;padding:5px 6px;border-radius:6px;cursor:pointer}
+.chip:hover{background:var(--accent-soft)}
+.chip input{margin-top:3px;accent-color:var(--accent)}
+.chip code{font-family:var(--f-mono);font-size:12px;color:var(--accent);min-width:34px;font-weight:600}
+.seg{display:flex;border:1px solid var(--line);border-radius:8px;overflow:hidden}
+.seg button{flex:1;white-space:nowrap;font:600 13px var(--f-ui);border:0;background:var(--panel);color:var(--muted);padding:7px 6px;cursor:pointer}
+.seg button+button{border-left:1px solid var(--line)}
+.seg button[aria-pressed="true"]{background:var(--accent-soft);color:var(--accent)}
+.codebox{font-family:var(--f-mono);font-size:13px;font-weight:600;letter-spacing:.03em}
+.note{font-size:12.5px;color:var(--muted);border-top:1px dashed var(--line);padding-top:12px;margin:0}
+/* ===== Sheet ===== */
+.sheetwrap{min-width:0}
+.toolbar{display:flex;flex-wrap:wrap;gap:8px;align-items:center;justify-content:space-between;margin-bottom:10px}
+.toolbar .row{gap:6px}
+.status{font-size:13px;color:var(--muted)}
+.sheet{background:var(--sheet);border:1px solid var(--line);border-radius:4px;box-shadow:0 1px 0 var(--line),0 12px 30px -18px rgba(20,30,60,.35);padding:clamp(18px,4vw,48px);font-family:var(--f-paper);font-size:16px;line-height:1.55;min-width:0}
+.cover{display:grid;grid-template-columns:minmax(0,1fr) auto;gap:12px 24px;border-bottom:2px solid var(--ink);padding-bottom:14px;margin-bottom:18px;font-family:var(--f-ui)}
+.cover h2{margin:0;font-size:clamp(20px,2.6vw,26px);font-weight:800;letter-spacing:-.01em;text-wrap:balance}
+.cover .sub{color:var(--muted);font-size:14px;margin-top:2px}
+.cover .meta{text-align:right;font-family:var(--f-mono);font-size:12.5px;line-height:1.7}
+@media (max-width:560px){.cover{grid-template-columns:1fr}.cover .meta{text-align:left}}
+.instr{font-family:var(--f-ui);font-size:13.5px;border:1px solid var(--line);border-radius:6px;padding:10px 14px;margin-bottom:22px}
+.instr ul{margin:4px 0 0;padding-left:18px}
+.section-h{font-family:var(--f-ui);font-weight:800;font-size:15px;letter-spacing:.06em;text-transform:uppercase;margin:28px 0 4px;display:flex;justify-content:space-between;gap:12px;border-bottom:1px solid var(--line);padding-bottom:6px}
+.section-h span:last-child{font-family:var(--f-mono);font-weight:600;font-size:12.5px;color:var(--muted);letter-spacing:0;text-transform:none}
+.section-i{font-family:var(--f-ui);font-size:13.5px;color:var(--muted);margin:0 0 12px}
+.q{display:grid;grid-template-columns:2.4em minmax(0,1fr);gap:0 6px;padding:14px 0;border-bottom:1px solid var(--line)}
+.q:last-child{border-bottom:0}
+.qn{font-weight:700;font-family:var(--f-ui)}
+.qbody{min-width:0}
+.tag{font-family:var(--f-mono);font-size:11px;color:var(--muted);border:1px solid var(--line);border-radius:4px;padding:0 5px;margin-left:6px;white-space:nowrap;vertical-align:2px}
+.qtext{margin:0 0 8px}
+.opts{list-style:none;margin:0;padding:0;display:grid;gap:4px}
+.opts li{display:flex;gap:10px;align-items:flex-start;padding:4px 8px;border-radius:6px}
+.opts label{display:flex;gap:10px;cursor:pointer;width:100%}
+.opts .L{font-family:var(--f-ui);font-weight:700;min-width:1.2em}
+.opts input{accent-color:var(--accent);margin-top:5px}
+.opts li.right{background:var(--ms);outline:1px solid var(--ms-line)}
+.opts li.wrong{outline:1px solid var(--bad)}
+.part{display:grid;grid-template-columns:2em minmax(0,1fr) auto;gap:4px 8px;margin:10px 0 2px;align-items:baseline}
+.part .pl{font-family:var(--f-ui);font-weight:600}
+.mk{font-family:var(--f-mono);font-weight:600;font-size:14px;white-space:nowrap}
+.lines{grid-column:2/4;height:calc(var(--n,2)*1.9em);background-image:repeating-linear-gradient(to bottom,transparent 0,transparent calc(1.9em - 1px),var(--line) calc(1.9em - 1px),var(--line) 1.9em);margin-top:4px}
+.stem{margin:0 0 6px}
+.dtwrap{overflow-x:auto}
+table.dt{border-collapse:collapse;margin:10px 0;font-family:var(--f-ui);font-size:13.5px;font-variant-numeric:tabular-nums}
+table.dt th,table.dt td{border:1px solid var(--line);padding:5px 10px;text-align:left}
+table.dt th{background:var(--accent-soft)}
+.persona{border:1px dashed var(--muted);padding:10px 12px;border-radius:6px;margin:10px 0;font-size:15px}
+.ms{background:var(--ms);border:1px solid var(--ms-line);border-radius:6px;padding:8px 12px;margin:8px 0 4px;font-family:var(--f-ui);font-size:13.5px;color:var(--ink)}
+.ms b.h{color:var(--ms-ink);font-size:11.5px;letter-spacing:.08em;text-transform:uppercase;font-family:var(--f-mono);display:block;margin-bottom:2px}
+.ms ul{margin:2px 0;padding-left:18px}
+.ms .nt{color:var(--muted);font-style:italic}
+.reveal{font:600 12.5px var(--f-ui);color:var(--accent);background:none;border:0;padding:4px 0;cursor:pointer;text-decoration:underline;text-underline-offset:3px}
+.bands{border-collapse:collapse;width:100%;margin:6px 0;font-size:13px}
+.bands td{border:1px solid var(--ms-line);padding:4px 8px;vertical-align:top}
+.bands td:first-child{font-family:var(--f-mono);font-weight:600;white-space:nowrap}
+.keygrid{display:grid;grid-template-columns:repeat(auto-fill,minmax(250px,1fr));gap:8px}
+.key{border:1px solid var(--ms-line);background:var(--ms);border-radius:6px;padding:8px 10px;font-family:var(--f-ui);font-size:13px}
+.key b{font-family:var(--f-mono)}
+.score{font-family:var(--f-ui);border:1px solid var(--line);border-radius:8px;padding:10px 14px;margin:0 0 14px;display:flex;flex-wrap:wrap;gap:8px 18px;align-items:center}
+.score strong{font-size:20px}
+.end{text-align:center;font-family:var(--f-ui);font-size:12px;letter-spacing:.2em;color:var(--muted);margin-top:28px}
+.toast{position:fixed;left:50%;bottom:calc(env(safe-area-inset-bottom,0px) + 18px);transform:translateX(-50%);background:var(--ink);color:var(--bg);padding:9px 16px;border-radius:8px;font-size:14px;z-index:9}
+.fb .field label{font-family:var(--f-ui)}
+.fb h3{font-family:var(--f-ui);font-size:18px;margin:0 0 4px}
+.fb p{font-family:var(--f-ui);font-size:14px;margin:0 0 10px}
+.steps{font-family:var(--f-ui);font-size:14px;margin:0 0 16px;padding-left:20px}
+.drop{border:2px dashed var(--line);border-radius:10px;padding:18px;text-align:center;font-family:var(--f-ui);cursor:pointer;display:block}
+.drop:hover,.drop.over{border-color:var(--accent);background:var(--accent-soft)}
+.drop input{display:none}
+.thumbs{display:flex;flex-wrap:wrap;gap:8px;margin:12px 0}
+.thumb{position:relative;width:92px;border:1px solid var(--line);border-radius:6px;overflow:hidden;background:var(--bg);font-family:var(--f-ui);font-size:11px}
+.thumb img{display:block;width:100%;height:120px;object-fit:cover}
+.thumb span{display:block;padding:2px 6px;color:var(--muted)}
+.thumb button{position:absolute;top:3px;right:3px;border:0;border-radius:50%;width:22px;height:22px;background:var(--ink);color:var(--bg);cursor:pointer;font-size:13px;line-height:22px;padding:0}
+.fb textarea{width:100%;min-height:110px;font:14px/1.5 var(--f-ui);color:var(--ink);background:var(--bg);border:1px solid var(--line);border-radius:8px;padding:10px}
+.fb label.opt{font-family:var(--f-ui);font-size:13.5px;display:flex;gap:8px;align-items:center;margin:8px 0}
+.callout{font-family:var(--f-ui);font-size:14px;border:1px solid var(--warn);border-radius:8px;padding:10px 14px;margin:0 0 14px;color:var(--ink)}
+.callout.err{border-color:var(--bad)}
+.thinking{font-family:var(--f-ui);font-size:14px;color:var(--muted);margin:12px 0}
+.res{margin-top:22px;font-family:var(--f-ui)}
+.res .big{display:flex;flex-wrap:wrap;gap:6px 18px;align-items:baseline;border-bottom:2px solid var(--ink);padding-bottom:10px;margin-bottom:12px}
+.res .big strong{font-size:32px;font-variant-numeric:tabular-nums}
+.restab{border-collapse:collapse;width:100%;font-size:13.5px}
+.restab th,.restab td{border-bottom:1px solid var(--line);padding:7px 8px;text-align:left;vertical-align:top}
+.restab td.n{font-family:var(--f-mono);font-weight:600;white-space:nowrap;font-variant-numeric:tabular-nums}
+.pill{display:inline-block;border-radius:999px;padding:1px 8px;font-family:var(--f-mono);font-size:12px;font-weight:600}
+.pill.full{background:var(--ms);color:var(--ms-ink)}.pill.part{background:var(--accent-soft);color:var(--accent)}.pill.zero{border:1px solid var(--bad);color:var(--bad)}
+.res h4{font-size:14px;text-transform:uppercase;letter-spacing:.06em;margin:18px 0 6px;color:var(--muted)}
+.res ul{margin:0;padding-left:18px;font-size:14px}
+.res .seen{color:var(--muted);font-style:italic}
+footer.foot{margin-top:18px;color:var(--muted);font-size:12.5px}
+@media (prefers-reduced-motion:no-preference){.sheet{transition:opacity .2s}}
+</style>
+<style>
+/* CS additions */
+pre.code{font-family:var(--f-mono);font-size:13px;line-height:1.5;background:var(--bg);border:1px solid var(--line);border-radius:6px;padding:10px 12px;margin:8px 0;overflow-x:auto;white-space:pre;tab-size:4}
+.ms pre.code{background:var(--sheet);border-color:var(--ms-line)}
+.ms .ans{margin-top:6px}
+.ms .ans b{font-family:var(--f-mono);font-size:11px;letter-spacing:.06em;text-transform:uppercase;color:var(--ms-ink)}
+.pre{margin:12px 0 4px}
+.hlb{font-family:var(--f-mono);font-size:10.5px;font-weight:700;color:var(--accent);border:1px solid var(--accent);border-radius:4px;padding:0 4px;margin-left:6px;vertical-align:2px}
+.chip.off{opacity:.45;cursor:not-allowed}
+.toggles{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+.toggles .lbl{display:block;margin-bottom:4px}
+code.i{font-family:var(--f-mono);font-size:.9em;background:var(--bg);border:1px solid var(--line);border-radius:4px;padding:0 4px}
+.flowbox{border:1px solid var(--line);border-radius:6px;padding:10px 12px;margin:10px 0;font-family:var(--f-mono);font-size:13px;max-width:560px}
+.flowt{font-family:var(--f-ui);font-weight:700;font-size:13px;margin-bottom:6px}
+.fnode{display:grid;grid-template-columns:2em auto 1fr;gap:8px;align-items:center;margin:4px 0}
+.fn{color:var(--muted);text-align:right}
+.fs{border:1.5px solid var(--ink);padding:3px 10px;display:inline-block;white-space:pre}
+.fb{color:var(--muted);font-size:12px}
+.flowk{font-family:var(--f-ui);font-size:11.5px;color:var(--muted);margin-top:6px}
+</style>
+</head><body>
+<div class="wrap">
+  <header class="top">
+    <div class="brand">
+      <div class="eyebrow">Computer Science · SL &amp; HL · First assessment 2027</div>
+      <h1>IB CS Paper Generator</h1>
+      <p>Build a fresh practice Paper 1, Paper 2 or a topic test from the 2027 syllabus, in Python or Java, then check yourself against the markscheme.</p>
+    </div>
+    <div class="tabs" role="tablist" aria-label="Paper type">
+      <button role="tab" id="tab-p1" aria-selected="true" data-mode="p1">Paper 1</button>
+      <button role="tab" id="tab-p2" aria-selected="false" data-mode="p2">Paper 2</button>
+      <button role="tab" id="tab-topic" aria-selected="false" data-mode="topic">Topic-wise</button>
+    </div>
+  </header>
+
+  <div class="grid">
+    <aside class="rail" aria-label="Paper settings">
+      <div class="toggles">
+        <div><span class="lbl">Level</span><div class="seg" role="group" aria-label="Level"><button data-lvl="sl" aria-pressed="true">SL</button><button data-lvl="hl" aria-pressed="false">HL</button></div></div>
+        <div><span class="lbl">Language</span><div class="seg" role="group" aria-label="Programming language"><button data-lang="py" aria-pressed="true">Python</button><button data-lang="java" aria-pressed="false">Java</button></div></div>
+      </div>
+      <div id="cfg-p1" class="stack">
+        <h2>Paper 1 format</h2>
+        <p class="hint" id="p1hint"></p>
+      </div>
+      <div id="cfg-p2" class="stack" hidden>
+        <h2>Paper 2 format</h2>
+        <p class="hint" id="p2hint"></p>
+      </div>
+      <div id="cfg-topic" class="stack" hidden>
+        <h2>Topic-wise settings</h2>
+        <div class="row"><button class="btn small" id="tAll">Select all</button><button class="btn small" id="tNone">Clear</button><button class="btn small" id="tA">Theme A</button><button class="btn small" id="tB">Theme B</button></div>
+        <div class="topics" id="topicList"></div>
+        <div class="row" style="gap:14px">
+          <div class="field"><label for="tm">Quick MCQs</label><input type="number" id="tm" min="0" max="60" value="10"></div>
+          <div class="field"><label for="ts">Structured</label><input type="number" id="ts" min="0" max="12" value="2"></div>
+          <div class="field"><label for="te">Discussion</label><input type="number" id="te" min="0" max="4" value="0"></div>
+        </div>
+        <p class="hint">Quick MCQs are for self-checking only (the IB CS papers have no multiple choice). Discussion questions use the case-study markbands: [6] at SL, [12] at HL.</p>
+      </div>
+
+      <div class="stack">
+        <button class="btn primary" id="gen">Generate new paper</button>
+        <div class="field"><label for="code">Paper code</label>
+          <div class="row"><input type="text" id="code" class="codebox" style="flex:1" spellcheck="false" autocomplete="off"><button class="btn small" id="load">Load</button></div>
+          <p class="hint">Share a code so the whole class gets the same paper. The code includes the level and language.</p></div>
+      </div>
+
+      <p class="note">Practice material written to the syllabus content in the IB DP Computer Science guide (first assessment 2027), following the layout of the specimen papers. Section B questions use their own short scenarios, not the official pre-seen case study. Markschemes list acceptable points; use your teacher's judgement for answers worded differently.</p>
+    </aside>
+
+    <main class="sheetwrap">
+      <div class="toolbar">
+        <div class="seg" role="group" aria-label="View">
+          <button id="vQ" aria-pressed="true" data-view="q">Question paper</button>
+          <button id="vI" aria-pressed="false" data-view="i">Self-check</button>
+          <button id="vM" aria-pressed="false" data-view="m">Markscheme</button>
+          <button id="vF" aria-pressed="false" data-view="f">Upload for feedback</button>
+        </div>
+        <div class="row">
+          <button class="btn small" id="dlQ">Download paper</button>
+          <button class="btn small" id="dlM">Download markscheme</button>
+          <button class="btn small" id="copy">Copy code</button>
+        </div>
+      </div>
+      <div class="status" id="status"></div>
+      <article class="sheet" id="sheet" aria-live="polite"></article>
+      <footer class="foot">Downloads are print-ready pages: open the file and use your browser's Print → Save as PDF.</footer>
+    </main>
+  </div>
+</div>
+<div class="toast" id="toast" hidden></div>
+
+<script src="data/core.js"></script>
+<script src="data/mcq.js"></script>
+<script src="data/themeA.js"></script>
+<script src="data/case.js"></script>
+<script src="data/themeB.js"></script>
+<script src="data/themeB-hl.js"></script>
+<script src="app.js"></script>
+</body></html>
