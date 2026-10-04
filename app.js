@@ -298,12 +298,13 @@ $("sheet").addEventListener("click",e=>{
 /* ---------- downloads (print-ready HTML) ---------- */
 function pageCSS(){return[...document.querySelectorAll("style")].map(s=>s.textContent).join("\n").replace(/@media \(prefers-color-scheme: dark\)\{[\s\S]*?color-scheme:dark\}\}/,"").replace(/:root\[data-theme="dark"\]\{[\s\S]*?color-scheme:dark\}/,"")}
 function fileStem(){return`CS-${S.paper.lvl==="hl"?"HL":"SL"}-${S.paper.title.replace(/\s+/g,"")}-${S.paper.code}`}
+const CREDIT=`<div class="credit"><span>Application prepared by <b>Satnam Singh Chhabra</b></span><span class="sep">·</span><a href="mailto:satnam.15apr@gmail.com">satnam.15apr@gmail.com</a><span class="sep">·</span><a href="tel:+919718480001">+91 97184 80001</a></div>`;
 function standalone(view){
   const label=view==="m"?"Markscheme":"Question paper";
   return`<!doctype html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>CS ${S.paper.title} ${label} ${S.paper.code}</title><link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Archivo:wght@400;600;800&family=Source+Serif+4:opsz,wght@8..60,400;8..60,600&family=JetBrains+Mono:wght@400;600&display=swap"><style>${pageCSS()}
 body{background:#fff;margin:0}.sheet{border:0;box-shadow:none;max-width:820px;margin:0 auto}.printbar{max-width:820px;margin:12px auto;padding:0 16px;font-family:var(--f-ui);display:flex;gap:10px;align-items:center}
 .q{break-inside:auto}.part{break-inside:avoid}.ms{break-inside:avoid}pre.code{break-inside:avoid;white-space:pre-wrap}
-@media print{.printbar{display:none}.sheet{padding:0}@page{size:A4;margin:16mm}}</style></head><body><div class="printbar"><button class="btn primary" onclick="window.print()">Print / Save as PDF</button><span class="hint">Tip: choose “Save as PDF” as the printer.</span></div><article class="sheet">${render(S.paper,view,true)}</article></body></html>`;
+@media print{.printbar{display:none}.sheet{padding:0}@page{size:A4;margin:16mm 16mm 24mm}}@media print{.credit{position:fixed;left:0;right:0;bottom:0;margin:0;padding:4px 0 0;background:#fff;border-top:1px solid #d5dbe6}}</style></head><body><div class="printbar"><button class="btn primary" onclick="window.print()">Print / Save as PDF</button><span class="hint">Tip: choose “Save as PDF” as the printer.</span></div><article class="sheet">${render(S.paper,view,true)}${CREDIT}</article></body></html>`;
 }
 function saveHTML(filename,data){const u=URL.createObjectURL(new Blob([data],{type:"text/html"}));const a=document.createElement("a");a.href=u;a.download=filename;document.body.appendChild(a);a.click();a.remove();setTimeout(()=>URL.revokeObjectURL(u),4000)}
 function save(view){const name=`${fileStem()}${view==="m"?"-markscheme":""}.html`;try{saveHTML(name,standalone(view));toast("Saved "+name)}catch(e){toast("Download didn't start")}}
@@ -499,10 +500,11 @@ $("sheet").addEventListener("click",e=>{
 }));
 function saveFeedback(){
   if(!FB.result)return;
-  const html=`<!doctype html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>CS feedback ${FB.result.code}</title><style>${pageCSS()}body{background:#fff}.sheet{max-width:860px;margin:16px auto;border:0;box-shadow:none}</style></head><body><article class="sheet"><div class="cover"><div><div class="eyebrow">Computer Science · Feedback</div><h2>${S.paper.title} feedback</h2><div class="sub">Paper code ${FB.result.code}</div></div><div class="meta">Total ${FB.result.total}/${FB.result.max}</div></div>${resultHTML(FB.result)}</article></body></html>`;
+  const html=`<!doctype html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>CS feedback ${FB.result.code}</title><style>${pageCSS()}body{background:#fff}.sheet{max-width:860px;margin:16px auto;border:0;box-shadow:none}@page{size:A4;margin:16mm 16mm 24mm}@media print{.credit{position:fixed;left:0;right:0;bottom:0;margin:0;padding:4px 0 0;background:#fff;border-top:1px solid #d5dbe6}}</style></head><body><article class="sheet"><div class="cover"><div><div class="eyebrow">Computer Science · Feedback</div><h2>${S.paper.title} feedback</h2><div class="sub">Paper code ${FB.result.code}</div></div><div class="meta">Total ${FB.result.total}/${FB.result.max}</div></div>${resultHTML(FB.result)}${CREDIT}</article></body></html>`;
   try{saveHTML(`CS-feedback-${FB.result.code}.html`,html);toast("Feedback saved")}catch(e){toast("Download isn't available here")}
 }
 
 /* ---------- boot ---------- */
 try{const last=localStorage.getItem("csgen-last");if(last)parseCode(last)}catch(e){}
+document.getElementById("creditFoot").innerHTML=CREDIT;
 syncControls();draw();

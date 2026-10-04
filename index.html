@@ -148,6 +148,9 @@ table.dt th{background:var(--accent-soft)}
 .res h4{font-size:14px;text-transform:uppercase;letter-spacing:.06em;margin:18px 0 6px;color:var(--muted)}
 .res ul{margin:0;padding-left:18px;font-size:14px}
 .res .seen{color:var(--muted);font-style:italic}
+.credit{font-family:var(--f-ui);font-size:11.5px;line-height:1.5;color:var(--muted);text-align:center;border-top:1px solid var(--line);padding-top:8px;margin-top:28px;display:flex;flex-wrap:wrap;justify-content:center;gap:2px 8px}
+.credit b{color:var(--ink);font-weight:600}.credit a{color:inherit;text-decoration:none}
+.foot .credit{margin-top:10px;justify-content:flex-start;text-align:left}
 footer.foot{margin-top:18px;color:var(--muted);font-size:12.5px}
 @media (prefers-reduced-motion:no-preference){.sheet{transition:opacity .2s}}
 </style>
@@ -238,7 +241,7 @@ code.i{font-family:var(--f-mono);font-size:.9em;background:var(--bg);border:1px 
       </div>
       <div class="status" id="status"></div>
       <article class="sheet" id="sheet" aria-live="polite"></article>
-      <footer class="foot">Downloads are print-ready pages: open the file and use your browser's Print → Save as PDF.</footer>
+      <footer class="foot">Downloads are print-ready pages: open the file and use your browser's Print → Save as PDF.<span id="creditFoot"></span></footer>
     </main>
   </div>
 </div>
