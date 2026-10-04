@@ -118,11 +118,11 @@ function build(){
     const F=FMT.p1[S.lvl];
     const best=bestOf(80,F.A,()=>["A1","A2","A3","A4"].map(f=>{const c=shuffle(SQ_A.filter(q=>q.fam===f&&qOK(q)),r)[0];return c&&prepSQ(c)}).filter(Boolean));
     const cs=shuffle(CASE.filter(qOK),r)[0];const B=prepSQ(cs);
-    P.title="Paper 1";P.sub="Concepts of computer science · Case-study style Section B";
+    P.title="Paper 1";P.sub=`Concepts of computer science · Case study: ${CASE_TITLE}`;
     P.sections.push({h:"Section A",i:"Answer all questions. Answers must be written within the answer spaces provided.",items:best.items});
-    P.sections.push({h:"Section B",i:"Answer the following question. It is set in a scenario in the style of the pre-seen case study.",items:[B]});
+    P.sections.push({h:"Section B",i:`Answer the following question, which refers to the case study “${CASE_TITLE}” (May and November 2027).`,items:[B]});
     P.marks=best.tot+B.m;P.mins=F.mins;
-    P.instr=["Section A: answer all questions.","Section B: answer the question.","Answers must be written within the answer spaces provided.",`The maximum mark for this paper is [${P.marks} marks].`];
+    P.instr=["A clean copy of the computer science case study is required for this paper.","Section A: answer all questions.","Section B: answer the question, which refers to the case study.","Answers must be written within the answer spaces provided.",`The maximum mark for this paper is [${P.marks} marks].`];
   }else if(S.mode==="p2"){
     const F=FMT.p2[S.lvl];
     const sl=SQ_B.filter(q=>!q.hl);
@@ -246,7 +246,7 @@ function render(P,view,print){
 const $=id=>document.getElementById(id);
 function hints(){
   const a=FMT.p1[S.lvl],b=FMT.p2[S.lvl];
-  $("p1hint").innerHTML=`Matches the ${isHL()?"HL":"SL"} specimen: ${isHL()?"2 hours":"1 hour 15 minutes"}, ${a.A+a.B} marks. <b>Section A</b> (${a.A} marks): one structured question on each of A1 Computer fundamentals, A2 Networks, A3 Databases and A4 Machine learning${isHL()?", with HL-only parts":""}. <b>Section B</b> (${a.B} marks): a case-study style question ending in a [${a.B/2}] markband question.`;
+  $("p1hint").innerHTML=`Matches the ${isHL()?"HL":"SL"} specimen: ${isHL()?"2 hours":"1 hour 15 minutes"}, ${a.A+a.B} marks. <b>Section A</b> (${a.A} marks): one structured question on each of A1 Computer fundamentals, A2 Networks, A3 Databases and A4 Machine learning${isHL()?", with HL-only parts":""}. <b>Section B</b> (${a.B} marks): one question on the pre-released case study <i>${CASE_TITLE}</i> (May/Nov 2027)${isHL()?", including the HL-only GAN and hybrid-model sections":""}, ending in a [${a.B/2}] markband question.`;
   $("p2hint").innerHTML=`Matches the ${isHL()?"HL":"SL"} specimen: ${isHL()?"2 hours":"1 hour 15 minutes"}, ${b.T} marks, all code in the chosen language. Includes one algorithmic-thinking question that needs no code${isHL()?", one more SL question, then HL-only questions on recursion, OOP with multiple classes and abstract data types":", a programming question and an OOP question"}.`;
 }
 function syncControls(){
