@@ -151,6 +151,17 @@ table.dt th{background:var(--accent-soft)}
 .credit{font-family:var(--f-ui);font-size:11.5px;line-height:1.5;color:var(--muted);text-align:center;border-top:1px solid var(--line);padding-top:8px;margin-top:28px;display:flex;flex-wrap:wrap;justify-content:center;gap:2px 8px}
 .credit b{color:var(--ink);font-weight:600}.credit a{color:inherit;text-decoration:none}
 .foot .credit{margin-top:10px;justify-content:flex-start;text-align:left}
+.gate{position:fixed;inset:0;background:rgba(10,15,25,.55);display:flex;align-items:center;justify-content:center;z-index:30;padding:16px}
+.gate form{background:var(--panel);color:var(--ink);border:1px solid var(--line);border-radius:12px;max-width:420px;width:100%;padding:20px;font-family:var(--f-ui);display:flex;flex-direction:column;gap:12px;box-shadow:0 20px 50px -20px rgba(0,0,0,.5)}
+.gate h3{margin:0;font-size:18px}.gate p{margin:0;font-size:13px;color:var(--muted)}
+.gate input[type=text],.gate input[type=email]{width:100%;font:500 15px var(--f-ui);color:var(--ink);background:var(--bg);border:1px solid var(--line);border-radius:8px;padding:9px 11px}
+.gate .err{color:var(--bad);font-size:13px;min-height:1em}
+.gate .row{justify-content:flex-end}
+.pdfwrap{position:fixed;left:-12000px;top:0;width:760px;background:#fff;z-index:-1}
+.pdfsheet{border:0!important;box-shadow:none!important;border-radius:0!important;padding:0 6px!important;max-width:none!important;background:#fff!important;color:#151c2b!important}
+.pdfsheet .pl-line{height:1.9em;border-bottom:1px solid #d5dbe6}
+.pdfsheet pre.code{white-space:pre-wrap;word-break:break-word}
+.pdfsheet .q{break-inside:auto}
 footer.foot{margin-top:18px;color:var(--muted);font-size:12.5px}
 @media (prefers-reduced-motion:no-preference){.sheet{transition:opacity .2s}}
 </style>
@@ -241,7 +252,7 @@ code.i{font-family:var(--f-mono);font-size:.9em;background:var(--bg);border:1px 
       </div>
       <div class="status" id="status"></div>
       <article class="sheet" id="sheet" aria-live="polite"></article>
-      <footer class="foot">Downloads are print-ready pages: open the file and use your browser's Print → Save as PDF.<span id="creditFoot"></span></footer>
+      <footer class="foot">Downloads are PDF files, ready to print or share.<span id="creditFoot"></span></footer>
     </main>
   </div>
 </div>

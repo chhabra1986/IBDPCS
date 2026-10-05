@@ -295,6 +295,71 @@ $("sheet").addEventListener("click",e=>{
   if(e.target.id==="reset"){S.answers={};S.checked=false;$("sheet").innerHTML=render(S.paper,S.view,false)}
 });
 
+/* ---------- PDF export (html2pdf.js, loaded on demand) ---------- */
+const H2P_URL="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js";
+const CREDIT_TXT="Application prepared by Satnam Singh Chhabra  ·  satnam.15apr@gmail.com  ·  +91 97184 80001";
+function loadH2P(){return new Promise((res,rej)=>{if(window.html2pdf)return res(window.html2pdf);const s=document.createElement("script");s.src=H2P_URL;s.onload=()=>window.html2pdf?res(window.html2pdf):rej(new Error("no html2pdf"));s.onerror=rej;document.head.appendChild(s)})}
+async function savePDF(inner,filename){
+  const h2p=await loadH2P();
+  const root=document.documentElement,prev=root.getAttribute("data-theme");root.setAttribute("data-theme","light");
+  const wrap=document.createElement("div");wrap.className="pdfwrap";wrap.innerHTML=`<article class="sheet pdfsheet">${inner}</article>`;
+  try{
+    wrap.querySelectorAll(".credit,.reveal,.printbar").forEach(x=>x.remove());
+    wrap.querySelectorAll(".lines").forEach(l=>{const n=parseInt(l.style.getPropertyValue("--n"))||2;l.style.background="none";l.style.height="auto";l.innerHTML=Array.from({length:n},()=>'<div class="pl-line"></div>').join("")});
+    try{await document.fonts.ready}catch(e){}
+    const opt={margin:[12,12,17,12],filename,image:{type:"jpeg",quality:0.95},
+      html2canvas:{scale:2,useCORS:true,backgroundColor:"#ffffff"},
+      jsPDF:{unit:"mm",format:"a4",orientation:"portrait",compress:true},
+      pagebreak:{mode:["css","legacy"],avoid:[".part",".ms","pre.code","tr",".key",".flowbox",".cover",".instr",".section-h",".opts li",".stem",".pre",".res .big"]}};
+    await h2p().set(opt).from(wrap.firstElementChild).toPdf().get("pdf").then(pdf=>{
+      const n=pdf.internal.getNumberOfPages(),W=pdf.internal.pageSize.getWidth(),H=pdf.internal.pageSize.getHeight();
+      for(let i=1;i<=n;i++){pdf.setPage(i);pdf.setDrawColor(213,219,230);pdf.setLineWidth(0.2);pdf.line(12,H-12,W-12,H-12);
+        pdf.setFont("helvetica","normal");pdf.setFontSize(8);pdf.setTextColor(90,100,120);
+        pdf.text(CREDIT_TXT,12,H-7.5);pdf.text(`Page ${i} of ${n}`,W-12,H-7.5,{align:"right"})}
+    }).save();
+  }finally{if(prev==null)root.removeAttribute("data-theme");else root.setAttribute("data-theme",prev)}
+}
+async function downloadPDF(inner,filename,fallbackHTML){
+  toast("Preparing PDF…");
+  try{await savePDF(inner,filename);toast("Saved "+filename)}
+  catch(e){
+    try{const u=URL.createObjectURL(new Blob([fallbackHTML()],{type:"text/html"}));const a=document.createElement("a");a.href=u;a.download=filename.replace(/\.pdf$/,".html");document.body.appendChild(a);a.click();a.remove();setTimeout(()=>URL.revokeObjectURL(u),4000);toast("PDF tool didn't load, so a print-ready page was saved instead")}
+    catch(e2){toast("Download didn't start")}
+  }
+}
+/* ---------- name + email before download (logged to the teacher's Google Sheet) ---------- */
+const LOG_URL="";
+const LOG_SITE="CS";
+function dlUser(){try{const u=JSON.parse(localStorage.getItem("dl-user")||"null");return u&&u.name&&u.email?u:null}catch(e){return null}}
+function askUser(){
+  return new Promise(res=>{
+    if(!LOG_URL)return res({name:"",email:""}); // box only shows once the Google Sheet link is set
+    const known=dlUser();if(known)return res(known);
+    const w=document.createElement("div");w.className="gate";
+    w.innerHTML=`<form novalidate><h3>Before you download</h3><p>Please enter your name and email. They are recorded by Mr Satnam Singh Chhabra to keep track of who uses these practice papers, and are not shared with anyone else.</p>
+<div class="field"><label for="gName">Full name</label><input type="text" id="gName" autocomplete="name" maxlength="80" required></div>
+<div class="field"><label for="gEmail">Email</label><input type="email" id="gEmail" autocomplete="email" maxlength="120" required></div>
+<div class="err" id="gErr"></div>
+<div class="row"><button type="button" class="btn" id="gCancel">Cancel</button><button type="submit" class="btn primary">Continue to download</button></div></form>`;
+    document.body.appendChild(w);const f=w.querySelector("form");w.querySelector("#gName").focus();
+    const done=v=>{w.remove();document.removeEventListener("keydown",esc);res(v)};
+    const esc=e=>{if(e.key==="Escape")done(null)};document.addEventListener("keydown",esc);
+    w.querySelector("#gCancel").onclick=()=>done(null);
+    w.addEventListener("click",e=>{if(e.target===w)done(null)});
+    f.onsubmit=e=>{e.preventDefault();
+      const name=w.querySelector("#gName").value.trim().replace(/\s+/g," "),email=w.querySelector("#gEmail").value.trim();
+      if(name.length<2){w.querySelector("#gErr").textContent="Please enter your name.";return}
+      if(!/^[^@\s]+@[^@\s]+\.[^@\s]+$/.test(email)){w.querySelector("#gErr").textContent="Please enter a valid email address.";return}
+      const u={name,email};try{localStorage.setItem("dl-user",JSON.stringify(u))}catch(err){}
+      done(u)};
+  });
+}
+function logDownload(u,item){
+  if(!LOG_URL||!u)return;
+  const P=S.paper||{};
+  const body=JSON.stringify({name:u.name,email:u.email,site:LOG_SITE,item,paper:P.title||"",code:P.code||"",level:P.lvl?(P.lvl==="hl"?"HL":"SL"):"SL",lang:P.lang?(P.lang==="py"?"Python":"Java"):""});
+  try{fetch(LOG_URL,{method:"POST",mode:"no-cors",keepalive:true,headers:{"Content-Type":"text/plain;charset=utf-8"},body})}catch(e){}
+}
 /* ---------- downloads (print-ready HTML) ---------- */
 function pageCSS(){return[...document.querySelectorAll("style")].map(s=>s.textContent).join("\n").replace(/@media \(prefers-color-scheme: dark\)\{[\s\S]*?color-scheme:dark\}\}/,"").replace(/:root\[data-theme="dark"\]\{[\s\S]*?color-scheme:dark\}/,"")}
 function fileStem(){return`CS-${S.paper.lvl==="hl"?"HL":"SL"}-${S.paper.title.replace(/\s+/g,"")}-${S.paper.code}`}
@@ -307,7 +372,11 @@ body{background:#fff;margin:0}.sheet{border:0;box-shadow:none;max-width:820px;ma
 @media print{.printbar{display:none}.sheet{padding:0}@page{size:A4;margin:16mm 16mm 24mm}}@media print{.credit{position:fixed;left:0;right:0;bottom:0;margin:0;padding:4px 0 0;background:#fff;border-top:1px solid #d5dbe6}}</style></head><body><div class="printbar"><button class="btn primary" onclick="window.print()">Print / Save as PDF</button><span class="hint">Tip: choose “Save as PDF” as the printer.</span></div><article class="sheet">${render(S.paper,view,true)}${CREDIT}</article></body></html>`;
 }
 function saveHTML(filename,data){const u=URL.createObjectURL(new Blob([data],{type:"text/html"}));const a=document.createElement("a");a.href=u;a.download=filename;document.body.appendChild(a);a.click();a.remove();setTimeout(()=>URL.revokeObjectURL(u),4000)}
-function save(view){const name=`${fileStem()}${view==="m"?"-markscheme":""}.html`;try{saveHTML(name,standalone(view));toast("Saved "+name)}catch(e){toast("Download didn't start")}}
+async function save(view){
+  const u=await askUser();if(!u)return;logDownload(u,view==="m"?"Markscheme":"Question paper");
+  const name=`${fileStem()}${view==="m"?"-markscheme":""}.pdf`;
+  await downloadPDF(render(S.paper,view,true),name,()=>standalone(view));
+}
 $("dlQ").onclick=()=>save("q");$("dlM").onclick=()=>save("m");
 
 /* ---------- feedback on uploaded scans (server-side marking via /api/mark) ---------- */
@@ -498,10 +567,10 @@ $("sheet").addEventListener("click",e=>{
   if(ev==="dragover")d.classList.add("over");else d.classList.remove("over");
   if(ev==="drop"&&e.dataTransfer)addFiles(e.dataTransfer.files);
 }));
-function saveFeedback(){
-  if(!FB.result)return;
-  const html=`<!doctype html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>CS feedback ${FB.result.code}</title><style>${pageCSS()}body{background:#fff}.sheet{max-width:860px;margin:16px auto;border:0;box-shadow:none}@page{size:A4;margin:16mm 16mm 24mm}@media print{.credit{position:fixed;left:0;right:0;bottom:0;margin:0;padding:4px 0 0;background:#fff;border-top:1px solid #d5dbe6}}</style></head><body><article class="sheet"><div class="cover"><div><div class="eyebrow">Computer Science · Feedback</div><h2>${S.paper.title} feedback</h2><div class="sub">Paper code ${FB.result.code}</div></div><div class="meta">Total ${FB.result.total}/${FB.result.max}</div></div>${resultHTML(FB.result)}${CREDIT}</article></body></html>`;
-  try{saveHTML(`CS-feedback-${FB.result.code}.html`,html);toast("Feedback saved")}catch(e){toast("Download isn't available here")}
+async function saveFeedback(){
+  if(!FB.result)return;const u=await askUser();if(!u)return;logDownload(u,"Feedback report");
+  const html=()=>`<!doctype html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>CS feedback ${FB.result.code}</title><style>${pageCSS()}body{background:#fff}.sheet{max-width:860px;margin:16px auto;border:0;box-shadow:none}@page{size:A4;margin:16mm 16mm 24mm}@media print{.credit{position:fixed;left:0;right:0;bottom:0;margin:0;padding:4px 0 0;background:#fff;border-top:1px solid #d5dbe6}}</style></head><body><article class="sheet"><div class="cover"><div><div class="eyebrow">Computer Science · Feedback</div><h2>${S.paper.title} feedback</h2><div class="sub">Paper code ${FB.result.code}</div></div><div class="meta">Total ${FB.result.total}/${FB.result.max}</div></div>${resultHTML(FB.result)}${CREDIT}</article></body></html>`;
+  await downloadPDF(`<div class="cover"><div><div class="eyebrow">Computer Science · Feedback</div><h2>${S.paper.title} feedback</h2><div class="sub">Paper code ${FB.result.code}</div></div><div class="meta">Total ${FB.result.total}/${FB.result.max}</div></div>${resultHTML(FB.result)}`,`CS-feedback-${FB.result.code}.pdf`,html);
 }
 
 /* ---------- boot ---------- */
