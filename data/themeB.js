@@ -12,7 +12,9 @@ parts:[
  {pre:`Table 1 shows the fundamental operations of a queue.${T([["Operation","Description"],["enqueue(x)","Adds x to the back of the queue."],["dequeue()","Removes and returns the element at the front of the queue."],["front()","Returns the element at the front without removing it."],["isEmpty()","Returns true if the queue is empty, otherwise false."]])}`,st:"B2.2",r:"B2.2.4",q:"An empty queue Q is used. Sketch the queue after these operations, clearly indicating the front:<br><code class='i'>enqueue(4) enqueue(9) enqueue(2) dequeue() enqueue(7) front() enqueue(5) dequeue()</code>",m:2,ms:["Elements 2, 7, 5 (in that order)","front clearly shown at 2"]},
  {st:"B2.2",r:"B2.2.3",q:"A stack S, with operations push, pop, peek and isEmpty, is available. Without writing code, describe how the order of the elements in queue Q could be reversed using S.",m:4,ms:["While Q is not empty (isEmpty is false)","dequeue an element from Q and push it onto S","then while S is not empty","pop an element from S and enqueue it onto Q"],note:"Answer must show an algorithmic approach."},
  {st:"B2.2",r:"B2.2.4",q:"Outline one real-world situation in which a queue is an appropriate data structure.",m:2,ms:["Print jobs sent to a shared printer","are printed in the order they arrive (FIFO)","(accept: keyboard buffer, CPU process scheduling, customer service calls, packets in a router)"]},
- {st:"B1.1",r:"B1.1.1",q:"A school wants a system to manage the queue of print jobs sent to its library printer. Identify two items that should be included in the problem specification.",m:2,ms:["Problem statement","constraints/limitations (e.g. maximum file size)","objectives/goals","input specification (e.g. document, user ID)","output specification (e.g. printed pages, status messages)","evaluation criteria"]}
+ {st:"B1.1",r:"B1.1.1",q:"A school wants a system to manage the queue of print jobs sent to its library printer. Identify two items that should be included in the problem specification.",m:2,ms:["Problem statement","constraints/limitations (e.g. maximum file size)","objectives/goals","input specification (e.g. document, user ID)","output specification (e.g. printed pages, status messages)","evaluation criteria"]},
+ {st:"B1.1",r:"B1.1.4",q:"State the output of the algorithm in Figure 1 when the input N is 0.",m:2,ms:["0, 0","because N &gt; 0 ? is false at once, so the loop body is never executed"]},
+ {st:"B2.2",r:"B2.2.3",q:"Distinguish between a queue and a stack.",m:2,ms:["A queue is first in, first out (FIFO): items are removed from the front in the order they were added","a stack is last in, first out (LIFO): the most recently added item is removed first"]}
 ]},
 {id:"B-alg-search",fam:"B2",alg:1,title:"Searching and sorting",stem:"A music app stores the IDs of a user's favourite songs. The IDs are stored in order in a list called IDS:<br><code class='i'>[3, 8, 15, 21, 27, 38, 44, 52, 60]</code> (indices 0 to 8).",parts:[
  {st:"B2.4",r:"B2.4.2",q:"Copy and complete a trace table to show how a binary search finds the value 38. Use the columns low, high, mid, IDS[mid]. (mid is calculated as (low + high) div 2.)",m:3,ms:["low/high/mid: 0, 8, 4 → IDS[4] = 27","5, 8, 6 → IDS[6] = 44","5, 5, 5 → IDS[5] = 38 found"],note:"Award [1] per correct row."},
@@ -20,7 +22,9 @@ parts:[
  {st:"B2.4",r:"B2.4.2",q:"Outline why a binary search cannot be used to find a song by its title in this list.",m:2,ms:["Binary search requires the data to be sorted by the value being searched for","the list is sorted by ID, not by title, so a linear search would be needed"]},
  {st:"B2.4",r:"B2.4.3",q:"Without writing code, describe the steps of a bubble sort that sorts a list into ascending order.",m:4,ms:["Compare each pair of adjacent elements, starting from the beginning","if they are in the wrong order (first larger than second), swap them","repeat for every pair to the end of the list — this is one pass; the largest value is now at the end","repeat passes until a pass makes no swaps/n − 1 passes (each pass can ignore the last sorted element)"]},
  {st:"B2.4",r:"B2.4.3",q:"State the contents of the list <code class='i'>[5, 1, 4, 2, 8]</code> after the first pass of a bubble sort into ascending order.",m:2,ms:["[1, 4, 2, 5, 8]"],note:"[2] for fully correct; [1] if one element misplaced."},
- {st:"B2.4",r:"B2.4.3",q:"Explain one advantage of selection sort compared with bubble sort.",m:2,ms:["Selection sort makes at most one swap per pass (n − 1 swaps in total)","so it is more efficient when swapping/writing data is expensive","(bubble sort can stop early if the list is already sorted — accept as a comparison only if linked to selection sort's advantage)"]}
+ {st:"B2.4",r:"B2.4.3",q:"Explain one advantage of selection sort compared with bubble sort.",m:2,ms:["Selection sort makes at most one swap per pass (n − 1 swaps in total)","so it is more efficient when swapping/writing data is expensive","(bubble sort can stop early if the list is already sorted — accept as a comparison only if linked to selection sort's advantage)"]},
+ {st:"B2.4",r:"B2.4.2",q:"State the maximum number of comparisons a binary search needs to find any value in IDS.",m:2,ms:["4","each comparison halves the part of the list still to be searched (9 → 4 → 2 → 1)"]},
+ {st:"B2.4",r:"B2.4.2",q:"Describe how a linear search would find the value 52 in IDS.",m:3,ms:["Start at the first element (index 0)","compare each element with 52 in turn, moving to the next element if it does not match","stop when 52 is found, at index 7, after 8 comparisons (or report not found at the end of the list)"]}
 ]},
 {id:"B-alg-files",fam:"B1",alg:1,title:"Nested loops and files",stem:"Consider the flowchart below."+FLOW("Figure 2: Flowchart for an algorithm",[
  {id:"s",k:"t",x:"START",next:"i"},{id:"i",k:"p",x:"i = 1",next:"d1"},{id:"d1",k:"d",x:"i <= 3 ?",yes:"j",no:"e"},
@@ -32,7 +36,9 @@ parts:[
  {pre:"The text file <b>scores</b> stores the name of each student on one line, followed by their test score on the next line:<pre class='code'>Amira\n72\nBen\n45\nChen\n90\n…</pre>An algorithm reads <b>scores</b> line by line and writes the names of students who scored 50 or more into a new file, <b>passed</b>. Both files are currently closed.",st:"B2.5",r:"B2.5.1",q:"Describe the steps that would be followed by this algorithm.",m:5,ms:["Open scores for reading","open passed for writing","loop until the end of the scores file","read a name line, then read the next line as the score (convert to a number)","if the score ≥ 50, write the name to passed","close both files"],note:"Award [1] for each step, max [5]. Award [1] for the first two steps if files are opened without stating the modes."},
  {st:"B1.1",r:"B1.1.2",q:"Outline how abstraction is used when designing this algorithm.",m:2,ms:["Only the details needed for the problem are kept (name and score)","other details about the students (e.g. address, class) are ignored, simplifying the solution"]},
  {st:"B2.1",r:"B2.1.4",q:"Outline how breakpoint debugging could help a programmer find an error in the code for this algorithm.",m:2,ms:["The program pauses at a chosen line (breakpoint)","so the values of variables (e.g. name, score) can be inspected at that point/stepped through line by line to find where they go wrong"]},
- {st:"B1.1",r:"B1.1.2",q:"Outline what is meant by pattern recognition in computational thinking.",m:2,ms:["Identifying similarities/repeated features in problems or data","so an existing solution/approach can be reused (e.g. reading name/score pairs repeatedly)"]}
+ {st:"B1.1",r:"B1.1.2",q:"Outline what is meant by pattern recognition in computational thinking.",m:2,ms:["Identifying similarities/repeated features in problems or data","so an existing solution/approach can be reused (e.g. reading name/score pairs repeatedly)"]},
+ {st:"B1.1",r:"B1.1.4",q:"Step 6 in Figure 2 is changed to output i + j. State all the outputs now produced, in order.",m:3,ms:["2","3, 4","4, 5, 6"],note:"Award [1] for each correct group in the correct order."},
+ {st:"B2.1",r:"B2.1.4",q:"Identify two errors (exceptions) that could occur when the algorithm processes the file scores.",m:2,ms:["The file does not exist/cannot be found","a score line is not a valid number, so converting it fails","the file cannot be opened because of permissions","the file ends unexpectedly (a name with no score)"]}
 ]},
 // ================= Programming fundamentals / data structures =================
 {id:"B-temps",fam:"B2",title:"Weekly temperatures",stem:[PJ("A weather app stores the midday temperatures (°C) for one week in a list called <code class='i'>temps</code>:","A weather app stores the midday temperatures (°C) for one week in an array called <code class='i'>temps</code>:"),C({py:`temps = [21.5, 23.0, 19.5, 25.0, 22.5, 18.0, 24.5]`,java:`double[] temps = {21.5, 23.0, 19.5, 25.0, 22.5, 18.0, 24.5};`})],parts:[
@@ -80,7 +86,10 @@ public static int hottestDay(double[] temps) {
     return best;
 }`})},
  {st:"B2.2",r:"B2.2.1",q:PJ("The app will store a year of readings, but the number of readings is not known in advance. Compare a static data structure with a dynamic data structure (such as a Python list) for this purpose.","The app will store a year of readings, but the number of readings is not known in advance. Compare a static array with a dynamic ArrayList for this purpose."),m:3,ms:["A static structure has a fixed size set when it is created; a dynamic structure can grow/shrink at run time","a static structure may waste memory if too large or run out of space if too small","a dynamic structure uses memory only as needed but has overheads (resizing/pointers) and access can be slower","static allows fast, direct indexed access with predictable memory use"],note:"Award up to [3] for valid comparison points."},
- {st:"B2.1",r:"B2.1.3",q:PJ("Users type in a temperature, which is converted with <code class='i'>float(input())</code>. Explain how exception handling could prevent the program crashing if a user types <code class='i'>hot</code>.","Users type in a temperature, which is converted with <code class='i'>Double.parseDouble(input)</code>. Explain how exception handling could prevent the program crashing if a user types <code class='i'>hot</code>."),m:3,ms:[PJ("Place the conversion inside a try block","Place the conversion inside a try block"),PJ("a ValueError is raised and caught by an except block","a NumberFormatException is thrown and caught by a catch block"),"the except/catch block displays an error message and asks the user to try again instead of crashing","(a finally block can run clean-up code whether or not an error occurred)"]}
+ {st:"B2.1",r:"B2.1.3",q:PJ("Users type in a temperature, which is converted with <code class='i'>float(input())</code>. Explain how exception handling could prevent the program crashing if a user types <code class='i'>hot</code>.","Users type in a temperature, which is converted with <code class='i'>Double.parseDouble(input)</code>. Explain how exception handling could prevent the program crashing if a user types <code class='i'>hot</code>."),m:3,ms:[PJ("Place the conversion inside a try block","Place the conversion inside a try block"),PJ("a ValueError is raised and caught by an except block","a NumberFormatException is thrown and caught by a catch block"),"the except/catch block displays an error message and asks the user to try again instead of crashing","(a finally block can run clean-up code whether or not an error occurred)"]},
+ {st:"B2.4",r:"B2.4.2",q:"Outline why a linear search, rather than a binary search, must be used to find a given temperature in temps.",m:2,ms:["The values in temps are not sorted","a binary search only works on sorted data"]},
+ {st:"B2.2",r:"B2.2.1",q:"State the value of temps[2] + temps[6].",m:1,ms:["44.0 (19.5 + 24.5)"]},
+ {st:"B2.1",r:"B2.1.4",q:"Identify two features of an integrated development environment (IDE) that help a programmer to find errors in this program.",m:2,ms:["Syntax highlighting/error underlining","a debugger with breakpoints and stepping","variable watch/inspection","error messages that show the line number"]}
 ]},
 {id:"B-strings",fam:"B2",title:"Usernames and passwords",stem:"A school creates usernames and checks passwords for its students.",parts:[
  {st:"B2.1",r:"B2.1.2",q:"State the output of the following code.",pre:C({py:`
@@ -134,7 +143,9 @@ public static boolean isValid(String password) {
     return hasDigit && hasUpper;
 }`})},
  {st:"B2.3",r:"B2.3.4",q:"Distinguish between a local variable and a global variable.",m:2,ms:["A local variable is declared inside a function/method and can only be used there (exists only while it runs)","a global variable is declared outside all functions/methods and can be accessed throughout the program"]},
- {st:"B2.3",r:"B2.3.4",q:"Outline one benefit of writing the username and password checks as separate functions (modularization).",m:2,ms:["Each function can be tested/debugged independently","and reused in other parts of the program/by other programmers, making code easier to maintain"]}
+ {st:"B2.3",r:"B2.3.4",q:"Outline one benefit of writing the username and password checks as separate functions (modularization).",m:2,ms:["Each function can be tested/debugged independently","and reused in other parts of the program/by other programmers, making code easier to maintain"]},
+ {st:"B2.3",r:"B2.3.4",q:"Outline why is_valid returns a value rather than printing a message.",m:2,ms:["The calling code can use the returned True/False, e.g. in a condition or loop","so the function can be reused in different parts of the program/tested more easily"]},
+ {st:"B2.1",r:"B2.1.4",q:"For the password length rule, give one example each of normal, boundary and invalid test data.",m:3,ms:["Normal: a valid password longer than 8 characters, e.g. Secure123A","Boundary: exactly 8 characters with a digit and an upper-case letter, e.g. Abcdef12","Invalid: fewer than 8 characters, e.g. Ab1"]}
 ]},
 {id:"B-rain",fam:"B2",title:"Rainfall records",stem:[PJ("A weather station records daily rainfall (mm) for 4 weeks in a 2D list called <code class='i'>rain</code>. Each row is a week and each column is a day (0 = Monday).","A weather station records daily rainfall (mm) for 4 weeks in a 2D array called <code class='i'>rain</code>. Each row is a week and each column is a day (0 = Monday)."),C({py:`
 rain = [[0, 2, 5, 0, 0, 1, 3],
@@ -205,7 +216,11 @@ public static void wettestDay(int[][] rain) {
     }
     System.out.println("Week " + bestW + " day " + bestD);
 }`})},
- {st:"B2.3",r:"B2.3.3",q:"Outline why counted loops are more appropriate than conditional loops for processing this data.",m:2,ms:["The number of weeks and days is known in advance (4 × 7)","so a counted (for) loop runs exactly the right number of times without needing a condition to stop it"]}
+ {st:"B2.3",r:"B2.3.3",q:"Outline why counted loops are more appropriate than conditional loops for processing this data.",m:2,ms:["The number of weeks and days is known in advance (4 × 7)","so a counted (for) loop runs exactly the right number of times without needing a condition to stop it"]},
+ {st:"B2.2",r:"B2.2.1",q:"State the number of rows and the number of columns in rain.",m:2,ms:["4 rows (weeks)","7 columns (days)"]},
+ {st:"B2.2",r:"B2.2.1",q:"State the total rainfall for the fourth week.",m:1,ms:["15 mm (2 + 9 + 0 + 0 + 3 + 0 + 1)"]},
+ {st:"B2.2",r:"B2.2.2",q:"The station now needs to store rainfall for 52 weeks. Outline the changes needed to the data structure and to the loops that process it.",m:2,ms:["rain would have 52 rows of 7 values","loops should use the number of rows (52/the length of rain) instead of the fixed value 4"]},
+ {st:"B2.3",r:"B2.3.3",q:"Identify the role of the variable dry in the code given earlier.",m:2,ms:["It is a counter","that counts the number of days with no rainfall (value 0)"]}
 ]},
 {id:"B-results",fam:"B2",title:"Test results file",stem:"A teacher stores test results in a text file, <b>results.txt</b>. Each line holds a student's name and score separated by a comma, for example:<pre class='code'>Amira,72\nBen,45\nChen,90</pre>",parts:[
  {st:"B2.5",r:"B2.5.1",q:"State the file mode needed to add new results to the end of the file without deleting the existing data.",m:1,ms:["Append (a)"]},
@@ -254,7 +269,10 @@ public static void addResult(String name, int score) throws IOException {
     fw.write(name + "," + score + "\\n");
     fw.close();
 }`})},
- {st:"B2.5",r:"B2.5.1",q:"Outline why a file should be closed after it has been used.",m:2,ms:["Ensures any buffered data is written to the file (not lost)","releases the file so other programs/users can access it and frees system resources"]}
+ {st:"B2.5",r:"B2.5.1",q:"Outline why a file should be closed after it has been used.",m:2,ms:["Ensures any buffered data is written to the file (not lost)","releases the file so other programs/users can access it and frees system resources"]},
+ {st:"B2.5",r:"B2.5.1",q:"Explain why each score read from results.txt must be converted before the average is calculated.",m:2,ms:["Data read from a text file is a string","it must be converted to a number (integer/real) before arithmetic can be done on it"]},
+ {st:"B2.5",r:"B2.5.1",q:"Outline one advantage of storing the results in a file rather than only in a list in memory.",m:2,ms:["Data in a file is persistent/non-volatile","so the results are still available after the program ends/the computer is switched off"]},
+ {st:"B2.1",r:"B2.1.4",q:"Identify two errors (exceptions) that could occur when class_average() runs.",m:2,ms:["The file does not exist","a score is not a valid number, so conversion fails","the file is empty, causing division by zero"]}
 ]},
 // ================= OOP =================
 {id:"B-book",fam:"B3",title:"Library books",stem:[PJ("A library system uses a <code class='i'>Book</code> class. The class is partially shown:","A library system uses a <code class='i'>Book</code> class. The class is partially shown:"),C({py:`
@@ -333,7 +351,8 @@ public static int available(ArrayList<Book> shelf) {
         }
     }
     return count;
-}`})}
+}`})},
+ {st:"B3.1",r:"B3.1.2",q:"Outline the purpose of the constructor in the Book class.",m:2,ms:["It is called automatically when a new Book object is created","it gives the attributes their initial values (title, author, on_loan = false) and updates total_books"]}
 ]},
 {id:"B-account",fam:"B3",title:"Bank accounts",stem:[PJ("A bank uses an <code class='i'>Account</code> class:","A bank uses an <code class='i'>Account</code> class:"),C({py:`
 class Account:
@@ -413,7 +432,9 @@ public static String richest(Account[] accounts) {
     }
     return best.getOwner();
 }`})},
- {st:"B3.1",r:"B3.1.1",q:"Outline one disadvantage of using object-oriented programming for a small program.",m:2,ms:["Designing classes adds extra planning and code (overhead)","which may make a simple program longer/more complex than a procedural solution"]}
+ {st:"B3.1",r:"B3.1.1",q:"Outline one disadvantage of using object-oriented programming for a small program.",m:2,ms:["Designing classes adds extra planning and code (overhead)","which may make a simple program longer/more complex than a procedural solution"]},
+ {st:"B3.1",r:"B3.1.4",q:"Explain why deposit() checks that the amount is greater than 0.",m:2,ms:["It validates the input to protect the data in the object","a negative amount would reduce the balance, acting like a withdrawal without the withdraw() checks"]},
+ {st:"B3.1",r:"B3.1.2",q:"Identify one accessor (getter) method in the Account class.",m:1,ms:["get_owner()/getOwner() or get_balance()/getBalance()"]}
 ]},
 {id:"B-sensor",fam:"B3",title:"Greenhouse sensors",stem:[PJ("A greenhouse uses a <code class='i'>Sensor</code> class to store temperature readings:","A greenhouse uses a <code class='i'>Sensor</code> class to store temperature readings:"),C({py:`
 class Sensor:
@@ -499,6 +520,8 @@ public static void alert(ArrayList<Sensor> sensors) {
         }
     }
 }`})},
- {st:"B3.1",r:"B3.1.1",q:"Outline how encapsulation is shown in the Sensor class.",m:2,ms:["The id and readings attributes are private","they are accessed only through public methods (getId, addReading), so readings cannot be altered directly"]}
+ {st:"B3.1",r:"B3.1.1",q:"Outline how encapsulation is shown in the Sensor class.",m:2,ms:["The id and readings attributes are private","they are accessed only through public methods (getId, addReading), so readings cannot be altered directly"]},
+ {st:"B3.1",r:"B3.1.3",q:"A sensor holds the readings 30, 36, 35, 40. State the value returned by count_above_limit().",m:1,ms:["2 (36 and 40; 35 is not above the limit)"]},
+ {st:"B3.1",r:"B3.1.3",q:"Distinguish between an instance variable and a static variable, using examples from the Sensor class.",m:2,ms:["An instance variable has a separate value for each object, e.g. id/readings","a static variable is shared by all objects of the class, e.g. LIMIT"]}
 ]}
 ];
