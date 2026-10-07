@@ -100,6 +100,17 @@ function trimTo(items,target){
   }
   return tot;
 }
+// cut each question to a prefix of its parts (at least 4 parts, 13–20 marks) so the paper totals exactly target;
+// a random valid combination is chosen, so different seeds give different papers
+function fitExact(items,target,r){
+  const opts=items.map(q=>{const o=[];let t=0;q.parts.forEach((p,i)=>{t+=p.m;if(i+1>=Math.min(4,q.parts.length)&&t>=13&&t<=20)o.push(i+1)});return o.length?o:[q.parts.length]});
+  const sums=items.map(q=>{let t=0;return q.parts.map(p=>t+=p.m)});
+  const valid=[];(function go(k,acc,tot){if(k===items.length){if(tot===target)valid.push(acc.slice());return}
+    for(const n of opts[k]){acc.push(n);go(k+1,acc,tot+sums[k][n-1]);acc.pop()}})(0,[],0);
+  if(!valid.length)return items;
+  const pick=valid[Math.floor(r()*valid.length)];
+  return items.map((q,k)=>{const parts=q.parts.slice(0,pick[k]);return{...q,parts,m:parts.reduce((s,p)=>s+p.m,0)}});
+}
 function bestOf(tries,target,makeSet){
   let best=null;
   for(let at=0;at<tries;at++){
@@ -143,6 +154,7 @@ function build(){
         add(shuffle(sl.filter(q=>q.fam==="B3"),r)[0]);
         // keep the OOP question last, like the specimen
         chosen.sort((a,b)=>(a.alg?0:a.fam==="B3"?2:1)-(b.alg?0:b.fam==="B3"?2:1));
+        return fitExact(chosen.map(q=>prepSQ(q)),F.T,r);
       }
       return chosen.map(q=>prepSQ(q));
     });
