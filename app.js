@@ -211,7 +211,7 @@ function renderItem(it,n,view,print){
       const ms=showMS?msBlockPart(p):(view==="i"&&!print?`<button class="reveal" data-rv="${n}-${i}">Show markscheme</button><div hidden id="rv-${n}-${i}">${msBlockPart(p)}</div>`:"");
       const lines=view==="q"||print&&view!=="m"?`<div class="lines" style="--n:${linesFor(p)}"></div>`:"";
       return`${p.pre?`<div class="pre">${p.pre}</div>`:""}<div class="part"><span class="pl">${partLabel(i)}</span><div>${p.q}</div><span class="mk">[${p.m}]</span>${lines}</div>${ms}`}).join("");
-    return`<div class="q"><div class="qn">${n}.</div><div class="qbody"><p class="stem"><b>${it.title}</b> <span class="tag">${it.sts.join(" · ")}</span></p><div class="dtwrap">${it.stem}</div>${parts}<div class="mk" style="text-align:right;margin-top:6px">Total [${it.m}]</div></div></div>`;
+    return`<div class="q"><div></div><div class="qbody"><div class="qtop"><div class="qn qnabs">${n}.</div><p class="stem"><b>${it.title}</b> <span class="tag">${it.sts.join(" · ")}</span></p><div class="dtwrap">${it.stem}</div></div>${parts}<div class="mk" style="text-align:right;margin-top:6px">Total [${it.m}]</div></div></div>`;
   }
   const ms=showMS?`<div class="ms">${bandsHTML(it.m,it.ind)}</div>`:(view==="i"&&!print?`<button class="reveal" data-rv="${n}-e">Show markscheme</button><div hidden id="rv-${n}-e"><div class="ms">${bandsHTML(it.m,it.ind)}</div></div>`:"");
   const lines=view==="q"||print&&view!=="m"?`<div class="lines" style="--n:${it.m>6?22:14}"></div>`:"";
@@ -310,7 +310,7 @@ async function savePDF(inner,filename){
     const opt={margin:[12,12,17,12],filename,image:{type:"jpeg",quality:0.95},
       html2canvas:{scale:2,useCORS:true,backgroundColor:"#ffffff"},
       jsPDF:{unit:"mm",format:"a4",orientation:"portrait",compress:true},
-      pagebreak:{mode:["css","legacy"],avoid:[".part",".ms","pre.code","tr",".key",".flowbox",".cover",".instr",".section-h",".opts li",".stem",".pre",".res .big"]}};
+      pagebreak:{mode:["css","legacy"],avoid:[".qtop",".part",".ms","pre.code","tr",".key",".flowbox",".cover",".instr",".section-h",".opts li",".stem",".pre",".res .big"]}};
     await h2p().set(opt).from(wrap.firstElementChild).toPdf().get("pdf").then(pdf=>{
       const n=pdf.internal.getNumberOfPages(),W=pdf.internal.pageSize.getWidth(),H=pdf.internal.pageSize.getHeight();
       for(let i=1;i<=n;i++){pdf.setPage(i);pdf.setDrawColor(213,219,230);pdf.setLineWidth(0.2);pdf.line(12,H-12,W-12,H-12);
@@ -383,7 +383,7 @@ $("dlQ").onclick=()=>save("q");$("dlM").onclick=()=>save("m");
 const FB={files:[],typed:"",careful:false,busy:false,ctl:null,err:"",result:null,note:""};
 const MAX_PAGES=12;
 const esc=s=>String(s??"").replace(/[&<>"]/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c]));
-const strip=h=>String(h).replace(/<\/(td|th)>/g," | ").replace(/<\/tr>/g,"\n").replace(/<br\s*\/?>/g,"\n").replace(/<\/(div|pre|p|li)>/g,"\n").replace(/<[^>]+>/g,"").replace(/&lt;/g,"<").replace(/&gt;/g,">").replace(/&quot;/g,'"').replace(/&amp;/g,"&").replace(/[ \t]+\n/g,"\n").trim();
+const strip=h=>String(h).replace(/<svg[\s\S]*?<\/svg>/g,"").replace(/<\/(td|th)>/g," | ").replace(/<\/tr>/g,"\n").replace(/<br\s*\/?>/g,"\n").replace(/<\/(div|pre|p|li)>/g,"\n").replace(/<[^>]+>/g,"").replace(/&lt;/g,"<").replace(/&gt;/g,">").replace(/&quot;/g,'"').replace(/&amp;/g,"&").replace(/[ \t]+\n/g,"\n").trim();
 function markables(P){
   const out=[];let n=0;
   P.sections.forEach(s=>s.items.forEach(it=>{n++;
