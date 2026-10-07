@@ -1,8 +1,10 @@
 /* Theme B SL questions (Paper 2). alg = algorithmic-thinking question (no code needed). Language variants via PJ()/C({py,java}). */
 const SQB=[
 // ================= Algorithmic thinking (no code) =================
-{id:"B-alg-digits",fam:"B1",alg:1,title:"Digits and queues",stem:"Algorithms can be represented by flowcharts. Consider the flowchart below."+FC("Figure 1: Flowchart for an algorithm",[
- ["t","START"],["io","input N"],["p","count = 0\ntotal = 0"],["d","N > 0 ?","true → 5 · false → 9"],["p","digit = N mod 10"],["p","total = total + digit"],["p","N = N div 10"],["p","count = count + 1","→ back to 4"],["io","output count, total"],["t","END"]]),
+{id:"B-alg-digits",fam:"B1",alg:1,title:"Digits and queues",stem:"Algorithms can be represented by flowcharts. Consider the flowchart below."+FLOW("Figure 1: Flowchart for an algorithm",[
+ {id:"s",k:"t",x:"START",next:"in"},{id:"in",k:"io",x:"input N",next:"i"},{id:"i",k:"p",x:"count = 0|total = 0",next:"d"},
+ {id:"d",k:"d",x:"N > 0 ?",yes:"dg",no:"o"},{id:"dg",k:"p",x:"digit = N mod 10",next:"t"},{id:"t",k:"p",x:"total = total + digit",next:"n"},
+ {id:"n",k:"p",x:"N = N div 10",next:"c"},{id:"c",k:"p",x:"count = count + 1",next:"d"},{id:"o",k:"io",x:"output count, total",next:"e"},{id:"e",k:"t",x:"END"}]),
 parts:[
  {st:"B1.1",r:"B1.1.2",q:"Identify the computational thinking concept used when a large problem is broken down into smaller, more manageable sub-problems.",m:1,ms:["Decomposition"]},
  {st:"B1.1",r:"B1.1.4",q:"Copy and complete a trace table for the flowchart in Figure 1 when the input N is 4072. Use the columns N, N &gt; 0 ?, digit, total, count and output. (<i>mod</i> gives the remainder; <i>div</i> gives the whole-number result of division.)",m:4,ms:["N: 4072, 407, 40, 4, 0","digit: 2, 7, 0, 4","total: 2, 9, 9, 13 and count: 1, 2, 3, 4","output: 4, 13 (and N &gt; 0 ? false at the end)"],note:"Award [1] per correct column group as listed."},
@@ -20,8 +22,10 @@ parts:[
  {st:"B2.4",r:"B2.4.3",q:"State the contents of the list <code class='i'>[5, 1, 4, 2, 8]</code> after the first pass of a bubble sort into ascending order.",m:2,ms:["[1, 4, 2, 5, 8]"],note:"[2] for fully correct; [1] if one element misplaced."},
  {st:"B2.4",r:"B2.4.3",q:"Explain one advantage of selection sort compared with bubble sort.",m:2,ms:["Selection sort makes at most one swap per pass (n − 1 swaps in total)","so it is more efficient when swapping/writing data is expensive","(bubble sort can stop early if the list is already sorted — accept as a comparison only if linked to selection sort's advantage)"]}
 ]},
-{id:"B-alg-files",fam:"B1",alg:1,title:"Nested loops and files",stem:"Consider the flowchart below."+FC("Figure 2: Flowchart for an algorithm",[
- ["t","START"],["p","i = 1"],["d","i <= 3 ?","true → 4 · false → 9"],["p","j = 1"],["d","j <= i ?","true → 6 · false → 8"],["io","output i * j"],["p","j = j + 1","→ back to 5"],["p","i = i + 1","→ back to 3"],["t","END"]]),
+{id:"B-alg-files",fam:"B1",alg:1,title:"Nested loops and files",stem:"Consider the flowchart below."+FLOW("Figure 2: Flowchart for an algorithm",[
+ {id:"s",k:"t",x:"START",next:"i"},{id:"i",k:"p",x:"i = 1",next:"d1"},{id:"d1",k:"d",x:"i <= 3 ?",yes:"j",no:"e"},
+ {id:"j",k:"p",x:"j = 1",next:"d2"},{id:"d2",k:"d",x:"j <= i ?",yes:"o",no:"ii"},{id:"o",k:"io",x:"output i * j",next:"jj"},
+ {id:"jj",k:"p",x:"j = j + 1",next:"d2"},{id:"ii",k:"p",x:"i = i + 1",next:"d1"},{id:"e",k:"t",x:"END"}]),
 parts:[
  {st:"B1.1",r:"B1.1.4",q:"State all the outputs produced by the flowchart in Figure 2, in order.",m:3,ms:["1","2, 4","3, 6, 9"],note:"Award [1] for each correct group in the correct order."},
  {st:"B2.4",r:"B2.4.1",q:"The value 3 in step 3 is replaced by a variable n. State the Big O time complexity of the algorithm in terms of n.",m:1,ms:["O(n²)"]},
